@@ -1,0 +1,40 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.2.0/peerjs.min.js"></script>
+<button onclick="sendToPeer(peer1, 'peer2', 'This is from peer1')">Send from peer1 to peer2</button>
+<br />
+<button onclick="sendToPeer(peer2, 'peer1', 'This is from peer2')">Send from peer2 to peer1</button>
+<script type="text/javascript">
+
+    // peer1
+    const peer1 = new Peer("peer1");
+    peer1.on('open', function (id) {
+        console.log('my peer ID is: ' + id);
+
+        // receiver
+        peer1.on('connection', function (conn) {
+            conn.on('data', function (data) {
+                console.log(peer1.id, 'received: ', data);
+            });
+        });
+    });
+
+    // peer2
+    const peer2 = new Peer("peer2");
+    peer2.on('open', function (id) {
+        console.log('my peer ID is: ' + id);
+
+        // receiver
+        peer2.on('connection', function (conn) {
+            conn.on('data', function (data) {
+                console.log(peer2.id, 'received: ', data);
+            });
+        });
+    });
+
+    function sendToPeer(srcPeer, destPeerId, data) {
+        const conn = srcPeer.connect(destPeerId);
+        conn.on('open', function () {
+            // send messages
+            conn.send(data);
+        });
+    }
+</script>
